@@ -48,12 +48,22 @@ void print(){
     
 }
 
+void reverse(){
+    struct node *prev=NULL,*next=NULL;
+    while (head!=NULL)
+    {
+        next = head->next;
+        head->next = prev;
+        prev = head;
+        head = next;
+    }
+    head = prev;
+}
 void main(){
-    printf("Hello World\n");
-    //print();
     append(0);
     append(1);
     append(2);
     delete_last();
+    reverse();
     print();
 }
