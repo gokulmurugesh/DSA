@@ -23,7 +23,13 @@ void append(int x){
         temp->next = new;  //linking struct 'new' to temp->next(Recursive structure)
     }
 }
-
+//queue
+void delete_front(){
+    struct node *del=head;
+    head = head->next;
+    free(del);
+}  
+//stack
 void delete_last(){
     struct node *temp = head;
     while(temp->next->next != NULL){ //checking for NULL without going to the last struct
