@@ -29,7 +29,7 @@ void delete_last(){
     while(temp->next->next != NULL){ //checking for NULL without going to the last struct
         temp = temp->next;
     }
-    free(temp->next->next); //freeing the last struct
+    free(temp->next); //freeing the last struct
     temp->next = NULL; //initializing the last previous to NULL. so that it becomes the last 
 }
 
@@ -59,10 +59,13 @@ void reverse(){
     }
     head = prev;
 }
+
 void main(){
     append(0);
     append(1);
     append(2);
+    append(3);
+    delete_last();
     delete_last();
     reverse();
     print();
