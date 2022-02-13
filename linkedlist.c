@@ -48,6 +48,16 @@ void print(){
     
 }
 
+void delete(int x){
+    struct node *temp=head;
+    while(temp->next->element != x){
+        temp=temp->next;
+    }
+    struct node *del=temp->next;
+    temp->next = temp->next->next;
+    free(del);
+}
+
 void reverse(){
     struct node *prev=NULL,*next=NULL;
     while (head!=NULL)
@@ -66,7 +76,7 @@ void main(){
     append(2);
     append(3);
     delete_last();
-    delete_last();
+    delete(1);
     reverse();
     print();
 }
