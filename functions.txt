@@ -1,0 +1,205 @@
+MariaDB [university]> create table student_marks(Roll_No varchar(5),Name varchar(20),Marks int);
+Query OK, 0 rows affected (0.265 sec)
+
+
+MariaDB [university]> insert into student_marks values('CS01','Akash',78),('CS03','Bobby',45),('CS05','Catherine',95),('CS10','Dany',65),('CS13','Emiley',30);
+Query OK, 5 rows affected (0.098 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+
+MariaDB [university]> select * from student_marks;
++---------+-----------+-------+
+| Roll_No | Name      | Marks |
++---------+-----------+-------+
+| CS01    | Akash     |    78 |
+| CS03    | Bobby     |    45 |
+| CS05    | Catherine |    95 |
+| CS10    | Dany      |    65 |
+| CS13    | Emiley    |    30 |
++---------+-----------+-------+
+5 rows in set (0.000 sec)
+
+MariaDB [university]> delimiter @
+
+MariaDB [university]> create or replace function student_status(score int) returns varchar(5)
+    -> begin
+    -> declare status varchar(5);
+    -> if score>=50 then set status="Pass";
+    -> else set status="Fail";
+    -> end if;
+    -> return (status);
+    -> end@
+Query OK, 0 rows affected (0.096 sec)
+
+MariaDB [university]> delimiter ;
+MariaDB [university]> select *,student_status(Marks) from student_marks;
++---------+-----------+-------+-----------------------+
+| Roll_No | Name      | Marks | student_status(Marks) |
++---------+-----------+-------+-----------------------+
+| CS01    | Akash     |    78 | Pass                  |
+| CS03    | Bobby     |    45 | Fail                  |
+| CS05    | Catherine |    95 | Pass                  |
+| CS10    | Dany      |    65 | Pass                  |
+| CS13    | Emiley    |    30 | Fail                  |
++---------+-----------+-------+-----------------------+
+5 rows in set (0.001 sec)
+
+
+MariaDB [university]> delimiter @
+MariaDB [university]> create or replace function dept_count(d_name varchar(20)) returns integer
+    -> begin
+    -> declare d_count integer;
+    -> select count(*) into d_count from instructor where dept_name= d_name;
+    -> return d_count;
+    -> end@
+Query OK, 0 rows affected (0.071 sec)
+
+
+MariaDB [university]> select dept_count('Music')@
++---------------------+
+| dept_count('Music') |
++---------------------+
+|                   1 |
++---------------------+
+1 row in set (0.055 sec)
+
+
+MariaDB [university]> select dept_count('Physics')@
++-----------------------+
+| dept_count('Physics') |
++-----------------------+
+|                     2 |
++-----------------------+
+1 row in set (0.001 sec)
+
+
+MariaDB [university]> select distinct dept_name,dept_count(dept_name) from instructor where dept_count(dept_name) > 1@
++-----------+-----------------------+
+| dept_name | dept_count(dept_name) |
++-----------+-----------------------+
+| Comp.Sci. |                     5 |
+| Finance   |                     2 |
+| History   |                     2 |
+| Physics   |                     2 |
++-----------+-----------------------+
+4 rows in set (0.053 sec)
+
+
+To return a Table in Functions
+
+create function instructors_of(d_name varchar(20)) returns table (ID varchar(5),name varchar(20),dept_name varchar(20),salary numeric(8,2))
+return table (select ID, name, dept_name, salary from instructor where dept_name = d_name);
+
+
+
+create or replace procedure dept_count_p(in d_name varchar(20),out d_count integer)
+begin
+select count(*) into d_count from instructor where dept_name= d_name;
+end@
+
+select dept_name, budget from instructor where dept_count(dept_name) > 1;
+
+delimiter @
+
+delimiter ;
+
+MariaDB [university]> create table marks(Roll_No varchar(5), English int,Tamil int, Maths int, Social int, Science int);
+Query OK, 0 rows affected (0.236 sec)
+
+MariaDB [university]> insert into marks values('CS01',78,67,89,98,60),('CS03',45,64,56,99,78),('CS05',98,66,77,90,95),('CS10',45,66,87,56,89),('CS13',56,78,67,62,63);
+Query OK, 5 rows affected (0.088 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+
+MariaDB [university]> select * from marks;
++---------+---------+-------+-------+--------+---------+
+| Roll_No | English | Tamil | Maths | Social | Science |
++---------+---------+-------+-------+--------+---------+
+| CS01    |      78 |    67 |    89 |     98 |      60 |
+| CS03    |      45 |    64 |    56 |     99 |      78 |
+| CS05    |      98 |    66 |    77 |     90 |      95 |
+| CS10    |      45 |    66 |    87 |     56 |      89 |
+| CS13    |      56 |    78 |    67 |     62 |      63 |
++---------+---------+-------+-------+--------+---------+
+5 rows in set (0.000 sec)
+
+
+
+MariaDB [university]> create table marks(Roll_No varchar(8),English int, Tamil int, Maths int, Social int, Science int);
+Query OK, 0 rows affected (0.276 sec)
+
+MariaDB [university]> create table consolidation(Roll_No varchar(8), Total int)@
+Query OK, 0 rows affected (0.259 sec)
+
+
+CREATE or REPLACE TRIGGER insert_entry AFTER INSERT ON marks
+FOR EACH ROW 
+BEGIN
+INSERT into consolidation VALUES(NEW.Roll_No,NEW.English+NEW.Tamil+NEW.Maths+NEW.Social+NEW.Science);
+END
+
+
+MariaDB [university]> CREATE or REPLACE TRIGGER insert_entry AFTER INSERT ON marks
+    -> FOR EACH ROW
+    -> BEGIN
+    -> INSERT into consolidation VALUES(NEW.Roll_No,NEW.English+NEW.Tamil+NEW.Maths+NEW.Social+NEW.Science);
+    -> END@
+Query OK, 0 rows affected (0.134 sec)
+
+MariaDB [university]> insert into marks values('CS01',50,60,70,80,90)@
+Query OK, 1 row affected (0.053 sec)
+
+MariaDB [university]> select * from marks@
++---------+---------+-------+-------+--------+---------+
+| Roll_No | English | Tamil | Maths | Social | Science |
++---------+---------+-------+-------+--------+---------+
+| CS01    |      50 |    60 |    70 |     80 |      90 |
++---------+---------+-------+-------+--------+---------+
+1 row in set (0.000 sec)
+
+MariaDB [university]> select * from consolidation@
++---------+-------+
+| Roll_No | Total |
++---------+-------+
+| CS01    |   350 |
++---------+-------+
+1 row in set (0.001 sec)
+
+
+
+CREATE or REPLACE TRIGGER update_marks AFTER UPDATE ON marks
+FOR EACH ROW
+BEGIN
+update consolidation set Total=NEW.English+NEW.Tamil+NEW.Maths+NEW.Social+NEW.Science where Roll_No=NEW.Roll_No;
+END@
+
+MariaDB [university]> CREATE or REPLACE TRIGGER update_marks AFTER UPDATE ON marks
+    -> FOR EACH ROW
+    -> BEGIN
+    -> update consolidation set Total=NEW.English+NEW.Tamil+NEW.Maths+NEW.Social+NEW.Science where Roll_No=NEW.Roll_No;
+    -> END@
+Query OK, 0 rows affected (0.102 sec)
+
+MariaDB [university]> select * from consolidation@
++---------+-------+
+| Roll_No | Total |
++---------+-------+
+| CS01    |   350 |
++---------+-------+
+1 row in set (0.000 sec)
+
+MariaDB [university]> update marks set Maths=100 where Roll_No='CS01'@
+Query OK, 1 row affected (0.077 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [university]> select * from consolidation@
++---------+-------+
+| Roll_No | Total |
++---------+-------+
+| CS01    |   380 |
++---------+-------+
+1 row in set (0.000 sec)
+
+
+create trigger [trigger_name] [before | after] {insert | update | delete} on  [table name]
+
