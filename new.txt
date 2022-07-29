@@ -1,0 +1,16 @@
+		val clerkButton = findViewById<Button>(R.id.clerkChoiceButton)
+        clerkButton.setOnClickListener {
+            val intent = Intent(this, ClerkActivity::class.java)
+            startActivity(intent)
+        }
+		
+		
+		
+		val clerkSubmitButton = findViewById<Button>(R.id.clerkSubmitButton)
+        clerkSubmitButton.setOnClickListener {
+			val tlocality = findViewById<EditText>(R.id.clerkTextLocality)
+            val locality = tlocality.text.toString()
+			val intent = Intent(this, ClerkSubmitViewActivity::class.java)
+            intent.putExtra("locality", locality);
+			startActivity(intent)
+		}
